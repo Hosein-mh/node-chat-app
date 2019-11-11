@@ -5,7 +5,7 @@ const socketIo = require('socket.io');
 const { generateMessage } = require('./utils/message');
 
 const publicDir = path.join(__dirname , '../public');
-const Port = process.env.Port || 3000;
+const Port = process.env.Port || 5000;
 
 var app = express();
 var server = http.createServer(app);
@@ -21,12 +21,14 @@ io.on('connection' , (socket) => {
     socket.on('disconnect' , () => {
         console.log('user disconnected')
     });
-    socket.broadcast.emit('joinAnnounce' , generateMessage("ali" , "Hello im here"));
-    socket.emit('newMessage' , {
-            from: "homoh817@gmail.com",
-            text: 'سلام من حسینم این اولین پیامیه که دارم واست میفرستم',
-            createdAt: new Date().getTime()
-    });
+    socket.emit('AdminMessage' , generateMessage('Hadi' , 'hello im send it from server'));
+    socket.broadcast.emit('newMessage' , generateMessage("user2" , "new user joined"));
+    socket.on('createMessage'  , (message) => {
+        io.emit("newMessage" , {
+            from: message.from,
+            text: message.text
+        })
+    })
 })
 
 server.listen(Port , () => {
